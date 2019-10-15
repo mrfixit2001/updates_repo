@@ -1,1 +1,1 @@
-This branch contains updates for version 1.2
+This branch contains updates for version 1.3

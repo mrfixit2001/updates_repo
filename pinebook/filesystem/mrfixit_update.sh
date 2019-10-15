@@ -6,7 +6,7 @@ if [ -f /usr/share/myver ]; then
         myver=$(cat /usr/share/myver)
 fi
 
-if [[ $myver != 1.1 ]]; then
+if [[ $myver < 1.1 ]]; then
 	echo "Updating U-Boot to Improve Support for booting other distros..."
 	SYSPART=$(findmnt -n -o SOURCE /)
 	if echo $SYSPART | grep -qE 'p[0-9]$' ; then
@@ -29,14 +29,14 @@ if [[ $myver != 1.1 ]]; then
 	fi
 fi
 
-echo "Updating Kernel Modules to 4.4.196..."
-mv $DIR/4.4.196 /lib/modules
+if [[ $myver < 1.2 ]]; then
+	echo "Updating Kernel Modules to 4.4.196..."
+	mv $DIR/4.4.196 /lib/modules
 
-echo
-echo "Installing WiDevine Update Script Desktop Shortcut..."
-chown rock:rock $DIR/*.desktop
-chmod +x $DIR/*.desktop
-mv $DIR/*.desktop /home/rock/Desktop
-mv $DIR/update_widevine.sh /usr/bin
-
-
+	echo
+	echo "Installing WiDevine Update Script Desktop Shortcut..."
+	chown rock:rock $DIR/*.desktop
+	chmod +x $DIR/*.desktop
+	mv $DIR/*.desktop /home/rock/Desktop
+	mv $DIR/update_widevine.sh /usr/bin
+fi
