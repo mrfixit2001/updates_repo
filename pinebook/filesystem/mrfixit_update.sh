@@ -33,7 +33,9 @@ echo "Updating Kernel Modules to 4.4.196..."
 mv $DIR/4.4.196 /lib/modules
 
 echo
-echo "Installing WiDevine Update Script..."
+echo "Installing WiDevine Update Script Desktop Shortcut..."
+chown rock:rock $DIR/*.desktop
+chmod +x $DIR/*.desktop
 mv $DIR/*.desktop /home/rock/Desktop
 mv $DIR/update_widevine.sh /usr/bin
 
