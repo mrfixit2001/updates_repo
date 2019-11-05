@@ -40,3 +40,11 @@ if [[ $myver < 1.2 ]]; then
 	mv $DIR/*.desktop /home/rock/Desktop
 	mv $DIR/update_widevine.sh /usr/bin
 fi
+
+# NOTE: v1.3 was just a kernel update - no filesystem updates
+
+if [[ $myver < 1.4 ]]; then
+	echo "Running Boot Partition Cleanup Script..."
+	chmod +x $DIR/cleanboot.sh
+	$DIR/cleanboot.sh
+fi
