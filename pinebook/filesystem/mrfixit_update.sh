@@ -6,8 +6,32 @@ if [ -f /usr/share/myver ]; then
         myver=$(cat /usr/share/myver)
 fi
 
-if [[ $myver < 1.1 ]]; then
-	echo "Updating U-Boot to Improve Support for booting other distros..."
+if [[ $myver < 1.2 ]]; then
+	echo "Installing WiDevine Update Script Desktop Shortcut..."
+	chown 1000:1000 $DIR/*.desktop
+	chmod +x $DIR/*.desktop
+	if [ -d "/home/rock/Desktop" ] ; then
+		mv $DIR/*.desktop /home/rock/Desktop
+	fi
+	ID="$(id -nu 1000)"
+	if [[ -d "/home/"$ID"/Desktop" && $ID != "rock" ]] ; then
+		mv $DIR/*.desktop /home/$ID/Desktop
+	fi
+	mv $DIR/update_widevine.sh /usr/bin
+fi
+
+# NOTE: v1.3 was just a kernel update - no filesystem updates
+
+if [[ $myver < 1.5 ]]; then
+	# Leave the current kernel version's modules folder in place so that it can be used as the backup kernel
+	echo "Updating Kernel Modules to 4.4.202..."
+	KER="$(uname -r)"
+	find /lib/modules -mindepth 1 ! -regex '^/lib/modules/'$KER'\(/.*\)?' -delete
+	rm /lib/modules/4.4.202 -r
+	mv $DIR/4.4.202 /lib/modules
+
+	echo
+	echo "Updating U-Boot..."
 	SYSPART=$(findmnt -n -o SOURCE /)
 	if echo $SYSPART | grep -qE 'p[0-9]$' ; then
 		DEVID=$(echo $SYSPART | sed -e s+'p[0-9]$'+''+)
@@ -27,24 +51,24 @@ if [[ $myver < 1.1 ]]; then
 		echo "Upgrading trust.img..."
 		dd if=$DIR/trust.img of=$DEVID bs=64k seek=192 conv=fsync &>/dev/null
 	fi
-fi
-
-if [[ $myver < 1.2 ]]; then
-	echo "Updating Kernel Modules to 4.4.196..."
-	mv $DIR/4.4.196 /lib/modules
 
 	echo
-	echo "Installing WiDevine Update Script Desktop Shortcut..."
-	chown rock:rock $DIR/*.desktop
-	chmod +x $DIR/*.desktop
-	mv $DIR/*.desktop /home/rock/Desktop
-	mv $DIR/update_widevine.sh /usr/bin
-fi
+	echo "Updating Chromium and Firefox..."
+	dpkg -i $DIR/chromium-codecs-ffmpeg-extra_78.0.3904.97-0ubuntu0.16.04.1_armhf.deb
+	dpkg -i $DIR/chromium-browser_78.0.3904.97-0ubuntu0.16.04.1_armhf.deb
+	dpkg -i $DIR/firefox_70.0.1+build1-0ubuntu0.16.04.1_armhf.deb
 
-# NOTE: v1.3 was just a kernel update - no filesystem updates
+	# Update bootpartscript
+	mv $DIR/partbootscript.sh /usr/bin
+	chmod +x /usr/bin/partbootscript.sh
 
-if [[ $myver < 1.4 ]]; then
+	# Disable wifi power management
+	mv $DIR/rc.local /etc
+	chmod +x /etc/rc.local
+
+	echo
 	echo "Running Boot Partition Cleanup Script..."
 	chmod +x $DIR/cleanboot.sh
 	$DIR/cleanboot.sh
 fi
+
