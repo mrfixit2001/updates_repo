@@ -23,14 +23,6 @@ fi
 # NOTE: v1.3 was just a kernel update - no filesystem updates
 
 if [[ $myver < 1.5 ]]; then
-	# Leave the current kernel version's modules folder in place so that it can be used as the backup kernel
-	echo "Updating Kernel Modules to 4.4.202..."
-	KER="$(uname -r)"
-	find /lib/modules -mindepth 1 ! -regex '^/lib/modules/'$KER'\(/.*\)?' -delete
-	rm /lib/modules/4.4.202 -r
-	mv $DIR/4.4.202 /lib/modules
-
-	echo
 	echo "Updating U-Boot..."
 	SYSPART=$(findmnt -n -o SOURCE /)
 	if echo $SYSPART | grep -qE 'p[0-9]$' ; then
@@ -65,6 +57,20 @@ if [[ $myver < 1.5 ]]; then
 	# Disable wifi power management
 	mv $DIR/rc.local /etc
 	chmod +x /etc/rc.local
+fi
+
+if [[ $myver < 1.6 ]]; then
+	# Leave the current kernel version's modules folder in place so that it can be used as the backup kernel
+	echo "Updating Kernel Modules to 4.4.205..."
+	KER="$(uname -r)"
+	find /lib/modules -mindepth 1 ! -regex '^/lib/modules/'$KER'\(/.*\)?' -delete
+	rm /lib/modules/4.4.205 -r
+	mv $DIR/4.4.205 /lib/modules
+
+	# Fix firefox graphics acceleration
+	for file in /home/*/.mozilla/firefox/*/prefs.js; do
+		echo 'user_pref("gfx.xrender.enabled", true);' >> "$file"
+	done
 
 	echo
 	echo "Running Boot Partition Cleanup Script..."
