@@ -20,8 +20,6 @@ if [[ $myver < 1.2 ]]; then
 	mv $DIR/update_widevine.sh /usr/bin
 fi
 
-# NOTE: v1.3 was just a kernel update - no filesystem updates
-
 if [[ $myver < 1.5 ]]; then
 	echo "Updating U-Boot..."
 	SYSPART=$(findmnt -n -o SOURCE /)
@@ -60,17 +58,19 @@ if [[ $myver < 1.5 ]]; then
 fi
 
 if [[ $myver < 1.6 ]]; then
-	# Leave the current kernel version's modules folder in place so that it can be used as the backup kernel
-	echo "Updating Kernel Modules to 4.4.205..."
-	KER="$(uname -r)"
-	find /lib/modules -mindepth 1 ! -regex '^/lib/modules/'$KER'\(/.*\)?' -delete
-	rm /lib/modules/4.4.205 -r
-	mv $DIR/4.4.205 /lib/modules
-
 	# Fix firefox graphics acceleration
 	for file in /home/*/.mozilla/firefox/*/prefs.js; do
 		echo 'user_pref("gfx.xrender.enabled", true);' >> "$file"
 	done
+fi
+
+if [[ $myver < 1.7 ]]; then
+	# Leave the current kernel version's modules folder in place so that it can be used as the backup kernel
+	echo "Updating Kernel Modules to 4.4.206..."
+	KER="$(uname -r)"
+	find /lib/modules -mindepth 1 ! -regex '^/lib/modules/'$KER'\(/.*\)?' -delete
+	rm /lib/modules/4.4.206 -r
+	mv $DIR/4.4.206 /lib/modules
 
 	echo
 	echo "Running Boot Partition Cleanup Script..."
