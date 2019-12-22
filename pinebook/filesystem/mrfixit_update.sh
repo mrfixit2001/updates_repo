@@ -64,13 +64,16 @@ if [[ $myver < 1.6 ]]; then
 	done
 fi
 
-if [[ $myver < 1.7 ]]; then
+if [[ $myver < 1.8 ]]; then
 	# Leave the current kernel version's modules folder in place so that it can be used as the backup kernel
-	echo "Updating Kernel Modules to 4.4.206..."
+	echo "Updating Kernel Modules to 4.4.207..."
 	KER="$(uname -r)"
 	find /lib/modules -mindepth 1 ! -regex '^/lib/modules/'$KER'\(/.*\)?' -delete
-	rm /lib/modules/4.4.206 -r
-	mv $DIR/4.4.206 /lib/modules
+	rm /lib/modules/4.4.207 -r
+	mv $DIR/4.4.207 /lib/modules
+
+	echo "Installing Chromium Default Flags for Improved Performance..."
+	mv $DIR/default /etc/chromium-browser
 
 	echo
 	echo "Running Boot Partition Cleanup Script..."
