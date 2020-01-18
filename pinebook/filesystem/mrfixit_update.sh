@@ -85,7 +85,7 @@ if [[ $myver < 1.9 ]]; then
 	done
 
 	echo "Adding bluetooth packages to fix issues..."
-	apt install -qq pulseaudio-module-bluetooth bluez-firmware &> /dev/null
+	apt install -qq -y pulseaudio-module-bluetooth bluez-firmware &> /dev/null
 
 	echo "Adding Community Wallpaper..."
 	cp $DIR/bgs/* /usr/share/backgrounds
