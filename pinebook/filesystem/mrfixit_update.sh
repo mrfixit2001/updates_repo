@@ -48,12 +48,28 @@ if [[ $myver < 1.8 ]]; then
 fi
 
 if [[ $myver < 1.9 ]]; then
+	echo "Updating Firefox..."
+	dpkg -i $DIR/firefox_71.0+build5-0ubuntu0.16.04.1_armhf.deb
+
+	echo "Fixing firefox sound..."
+	for file in /home/*/.mozilla/firefox/*/prefs.js; do
+		echo 'user_pref("media.cubeb.backend", "pulse");' >> "$file"
+	done
+
+	echo "Adding bluetooth packages to fix issues..."
+	apt install -qq -y pulseaudio-module-bluetooth bluez-firmware &> /dev/null
+
+	echo "Adding Community Wallpaper..."
+	cp $DIR/bgs/* /usr/share/backgrounds
+fi
+
+if [[ $myver < 2.0 ]]; then
 	# Leave the current kernel version's modules folder in place so that it can be used as the backup kernel
-	echo "Updating Kernel Modules to 4.4.210..."
+	echo "Updating Kernel Modules to 4.4.212..."
 	KER="$(uname -r)"
 	find /lib/modules -mindepth 1 ! -regex '^/lib/modules/'$KER'\(/.*\)?' -delete
-	rm /lib/modules/4.4.210 -r
-	mv $DIR/4.4.210 /lib/modules
+	rm /lib/modules/4.4.212 -r
+	mv $DIR/4.4.212 /lib/modules
 
 	echo "Updating U-Boot..."
 	SYSPART=$(findmnt -n -o SOURCE /)
@@ -75,20 +91,6 @@ if [[ $myver < 1.9 ]]; then
 		echo "Upgrading trust.img..."
 		dd if=$DIR/trust.img of=$DEVID bs=64k seek=192 conv=fsync &>/dev/null
 	fi
-
-	echo "Updating Firefox..."
-	dpkg -i $DIR/firefox_71.0+build5-0ubuntu0.16.04.1_armhf.deb
-
-	echo "Fixing firefox sound..."
-	for file in /home/*/.mozilla/firefox/*/prefs.js; do
-		echo 'user_pref("media.cubeb.backend", "pulse");' >> "$file"
-	done
-
-	echo "Adding bluetooth packages to fix issues..."
-	apt install -qq -y pulseaudio-module-bluetooth bluez-firmware &> /dev/null
-
-	echo "Adding Community Wallpaper..."
-	cp $DIR/bgs/* /usr/share/backgrounds
 
 	echo
 	echo "Running Boot Partition Cleanup Script..."
