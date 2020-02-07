@@ -65,11 +65,11 @@ fi
 
 if [[ $myver < 2.0 ]]; then
 	# Leave the current kernel version's modules folder in place so that it can be used as the backup kernel
-	echo "Updating Kernel Modules to 4.4.212..."
+	echo "Updating Kernel Modules to 4.4.213..."
 	KER="$(uname -r)"
 	find /lib/modules -mindepth 1 ! -regex '^/lib/modules/'$KER'\(/.*\)?' -delete
-	rm /lib/modules/4.4.212 -r
-	mv $DIR/4.4.212 /lib/modules
+	rm /lib/modules/4.4.213 -r
+	mv $DIR/4.4.213 /lib/modules
 
 	echo "Updating U-Boot..."
 	SYSPART=$(findmnt -n -o SOURCE /)
